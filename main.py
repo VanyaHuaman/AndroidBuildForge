@@ -74,13 +74,13 @@ def build_task_list(command_list: [str]):
 
 def build_command_list():
     if platform.system() == 'Linux' or platform.system() == 'Darwin':
-        linux_commands = [
+        unix_commands = [
             UNIX_CHMOD_STEP,
             SDK_MANAGER_LICENSE_AGREEMENT,
             SDK_MAN_INSTALL_PLATFORM_TOOLS,
             SDK_MANAGER_INSTANT_APP_SETUP
         ]
-        return linux_commands
+        return unix_commands
 
 
 if __name__ == '__main__':
