@@ -13,6 +13,7 @@ UNIX_BUILD_TOOLS_PATH_BASE = "/build-tools/"
 
 ANDROID_HOME = "ANDROID_HOME"
 PLATFORM_TOOLS = "platform-tools"
+EXTRAS_INSTANT_APP = "extras/google/instantapps"
 YES_PIPE = "yes |"
 UNIX_CHMOD = "chmod +x"
 DASH = "-"

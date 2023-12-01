@@ -82,17 +82,19 @@ def get_unix_setup_commands():
                                    f"{const.INITIAL_BUILD_TOOL_VERSION}'")
         command_list.append(sdk_manager_build_tools)
 
-    sdk_man_install_platform_tools = (sdk_manager_base_command +
-                                      const.SPACE +
-                                      const.SDK_MAN_ARG_INSTALL +
-                                      const.SPACE +
-                                      const.PLATFORM_TOOLS)
-    command_list.append(sdk_man_install_platform_tools)
+    if not is_platform_tools_installed():
+        sdk_man_install_platform_tools = (sdk_manager_base_command +
+                                          const.SPACE +
+                                          const.SDK_MAN_ARG_INSTALL +
+                                          const.SPACE +
+                                          const.PLATFORM_TOOLS)
+        command_list.append(sdk_man_install_platform_tools)
 
-    sdk_manager_instant_app_setup = (sdk_manager_base_command +
-                                     const.SPACE +
-                                     const.SDK_MAN_ARG_INSTANT_APP)
-    command_list.append(sdk_manager_instant_app_setup)
+    if not is_instant_app_tools_installed():
+        sdk_manager_instant_app_setup = (sdk_manager_base_command +
+                                         const.SPACE +
+                                         const.SDK_MAN_ARG_INSTANT_APP)
+        command_list.append(sdk_manager_instant_app_setup)
 
     sdk_manager_license_agreement = (const.YES_PIPE +
                                      const.SPACE +
@@ -134,6 +136,14 @@ def is_sdk_manager_installed():
     return os.path.isfile(get_sdk_manager_path())
 
 
+def is_platform_tools_installed():
+    return os.path.exists(get_platform_tools_path())
+
+
+def is_instant_app_tools_installed():
+    return os.path.exists(get_instant_app_tools_path())
+
+
 def is_mac():
     return platform.system().lower() == const.DARWIN
 
@@ -163,6 +173,16 @@ def get_sdk_manager_path():
 def get_build_tool_path(version_code: str):
     if is_unix():
         return f"{get_android_home()}{const.UNIX_BUILD_TOOLS_PATH_BASE}{version_code}"
+
+
+def get_platform_tools_path():
+    if is_unix():
+        return f"{get_android_home()}{const.FORWARD_SLASH}{const.PLATFORM_TOOLS}"
+
+
+def get_instant_app_tools_path():
+    if is_unix():
+        return f"{get_android_home()}{const.FORWARD_SLASH}{const.EXTRAS_INSTANT_APP}"
 
 
 def is_sdkmanager_executable():
