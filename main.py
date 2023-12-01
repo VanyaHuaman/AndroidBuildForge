@@ -1,14 +1,10 @@
 import helpers
 
-# Program args
-CMD_TOOLS_VERSION = "10406996"
-INITIAL_BUILD_TOOL_VERSION = "34.0.0"
-
 
 def light_forge():
     print("Lighting Forge")
-    helpers.download_cmd_tools(CMD_TOOLS_VERSION)
-    commands = helpers.build_command_list(INITIAL_BUILD_TOOL_VERSION)
+    helpers.check_for_sdk_manager()
+    commands = helpers.build_command_list()
     tasks = helpers.build_task_list(commands)
     helpers.launch_tasks(tasks)
 

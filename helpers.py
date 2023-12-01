@@ -10,6 +10,11 @@ import subprocess
 import platform
 
 
+def check_for_sdk_manager():
+    if not is_sdk_manager_installed():
+        download_cmd_tools(const.CMD_TOOLS_VERSION)
+
+
 def download_cmd_tools(cmd_line_version: str):
     url = get_commandline_url(cmd_line_version)
     download_and_unzip(f"{const.COMMAND_LINE_TOOLS.title()} version:{cmd_line_version}", url, get_android_home())
@@ -52,48 +57,50 @@ def build_task_list(command_list: [str]):
     return task_list
 
 
-def build_command_list(build_tools_version: str):
+def build_command_list():
     if is_unix():
-        unix_commands = get_unix_setup_commands(build_tools_version)
+        unix_commands = get_unix_setup_commands()
         return unix_commands
 
 
-def get_unix_setup_commands(build_tools_version: str):
-    # Unix SDK manager variable setup
+def get_unix_setup_commands():
+    command_list = []
     sdk_manager_path = get_sdk_manager_path()
     sdk_manager_base_command = sdk_manager_path + const.SPACE + const.SDK_MAN_ARG_SDK_ROOT + get_android_home()
 
     # Unix tasks
     unix_chmod_step = const.UNIX_CHMOD + const.SPACE + sdk_manager_path
+    command_list.append(unix_chmod_step)
 
-    sdk_manager_build_tools = (const.YES_PIPE +
-                               const.SPACE +
-                               sdk_manager_base_command +
-                               const.SPACE +
-                               f"'{const.BUILD_TOOLS}"
-                               f"{build_tools_version}'")
+    if not is_build_tool_version_installed(const.INITIAL_BUILD_TOOL_VERSION):
+        sdk_manager_build_tools = (const.YES_PIPE +
+                                   const.SPACE +
+                                   sdk_manager_base_command +
+                                   const.SPACE +
+                                   f"'{const.BUILD_TOOLS}"
+                                   f"{const.INITIAL_BUILD_TOOL_VERSION}'")
+        command_list.append(sdk_manager_build_tools)
 
     sdk_man_install_platform_tools = (sdk_manager_base_command +
                                       const.SPACE +
                                       const.SDK_MAN_ARG_INSTALL +
                                       const.SPACE +
                                       const.PLATFORM_TOOLS)
+    command_list.append(sdk_man_install_platform_tools)
+
     sdk_manager_instant_app_setup = (sdk_manager_base_command +
                                      const.SPACE +
                                      const.SDK_MAN_ARG_INSTANT_APP)
+    command_list.append(sdk_manager_instant_app_setup)
+
     sdk_manager_license_agreement = (const.YES_PIPE +
                                      const.SPACE +
                                      sdk_manager_base_command +
                                      const.SPACE +
                                      const.SDK_MAN_ARG_LICENSES)
+    command_list.append(sdk_manager_license_agreement)
 
-    return [
-        unix_chmod_step,
-        sdk_manager_build_tools,
-        sdk_man_install_platform_tools,
-        sdk_manager_instant_app_setup,
-        sdk_manager_license_agreement
-    ]
+    return command_list
 
 
 def get_commandline_url(cmdline_tools_version):
@@ -111,6 +118,11 @@ def get_commandline_url(cmdline_tools_version):
         commandline_url = (const.CMD_LINE_URL_BASE + const.WINDOWS + const.DASH +
                            f"{cmdline_tools_version}" + const.LATEST_ZIP)
     return commandline_url
+
+
+def is_build_tool_version_installed(version_code: str):
+    build_tool_path = get_build_tool_path(version_code)
+    return os.path.exists(build_tool_path)
 
 
 def is_sdk_manager_installed():
@@ -138,4 +150,12 @@ def get_android_home():
 
 
 def get_sdk_manager_path():
-    return f"{get_android_home()}{const.UNIX_SDK_MAN_PATH_END}"
+    if is_unix():
+        return (f"{get_android_home()}"
+                f"{const.UNIX_SDK_MAN_PATH_END}")
+
+
+
+def get_build_tool_path(version_code: str):
+    if is_unix():
+        return f"{get_android_home()}{const.UNIX_BUILD_TOOLS_PATH_BASE}{version_code}"
