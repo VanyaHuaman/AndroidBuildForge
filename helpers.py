@@ -155,7 +155,6 @@ def get_sdk_manager_path():
                 f"{const.UNIX_SDK_MAN_PATH_END}")
 
 
-
 def get_build_tool_path(version_code: str):
     if is_unix():
         return f"{get_android_home()}{const.UNIX_BUILD_TOOLS_PATH_BASE}{version_code}"
