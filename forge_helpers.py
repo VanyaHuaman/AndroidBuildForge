@@ -3,7 +3,7 @@ import urllib
 from urllib.request import urlopen
 from io import BytesIO
 from zipfile import ZipFile
-import constants as const
+import forge_constants as const
 import certifi
 import ssl
 import subprocess
