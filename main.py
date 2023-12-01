@@ -10,4 +10,7 @@ def light_forge():
 
 
 if __name__ == '__main__':
-    light_forge()
+    if helpers.is_android_home_set():
+        light_forge()
+    else:
+        print("ERROR: ANDROID_HOME ENV VAR IS NOT SET")
