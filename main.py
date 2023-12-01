@@ -5,21 +5,37 @@ from zipfile import ZipFile
 import certifi
 import ssl
 import subprocess
+import platform
 
-
+# Program args
 ANDROID_HOME = "."
-
 SDK_TOOLS_VERSION = "10406996"
 COMMAND_LINE_TOOLS_URL = ("https://dl.google.com/android/repository/commandlinetools-linux-"
                           + SDK_TOOLS_VERSION
                           + "_latest.zip")
-SDK_MANAGER_LOCATION = ANDROID_HOME + "cmdline-tools/bin/sdkmanager"
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+# Unix SDK manager variable setup
+SDK_MANAGER_PATH = ANDROID_HOME + "/cmdline-tools/bin/sdkmanager"
+SDK_MANAGER_BASE_COMMAND = SDK_MANAGER_PATH + " --sdk_root=" + ANDROID_HOME
+
+# Sdk Manager args
+SDK_MAN_ARG_LIST = "--list"
+SDK_MAN_ARG_LICENSES = "--licenses"
+SDK_MAN_ARG_INSTALL = "--install"
+SDK_MAN_ARG_INSTANT_APP = "'extras;google;instantapps'"
+
+# Unix tasks
+UNIX_CHMOD_STEP = "chmod +x " + SDK_MANAGER_PATH
+SDK_MANAGER_LICENSE_AGREEMENT = "yes | " + SDK_MANAGER_BASE_COMMAND + " " + SDK_MAN_ARG_LICENSES
+SDK_MAN_INSTALL_PLATFORM_TOOLS = SDK_MANAGER_BASE_COMMAND + " " + SDK_MAN_ARG_INSTALL + " " + "platform-tools"
+SDK_MANAGER_INSTANT_APP_SETUP = SDK_MANAGER_BASE_COMMAND + " " + SDK_MAN_ARG_INSTANT_APP
+
+
+def light_forge():
+    print("Lighting Forge")
+    tasks = build_task_list(build_command_list())
     download_and_unzip(COMMAND_LINE_TOOLS_URL, ANDROID_HOME)
-    launchSdkManager()
+    launch_tasks(tasks)
 
 
 def download_and_unzip(url, extract_to='.'):
@@ -31,12 +47,41 @@ def download_and_unzip(url, extract_to='.'):
         zipfile.extractall(path=extract_to)
         print("Zip File Extracted")
 
-def launchSdkManager(buildVersion=""):
-    result = subprocess.run([SDK_MANAGER_LOCATION, "--install platform-tools extras;google;instantapps"], shell=True, capture_output=True, text=True)
-    print(result.stdout)
-    print("Sdk Manager setup complete")
+
+def launch_tasks(tasks: [subprocess]):
+    try:
+        print("Starting " + str(len(tasks)) + " tasks")
+        for task in tasks:
+            print(task)
+        print("All Tasks complete")
+    except subprocess.CalledProcessError as e:
+        print(f"Task Error: {e}")
 
 
-# Press the green button in the gutter to run the script.
+def build_task_list(command_list: [str]):
+    task_list = []
+    for command in command_list:
+        task = subprocess.run(
+            command,
+            shell=True,
+            capture_output=False,
+            text=True,
+            check=True
+        )
+        task_list.append(task)
+    return task_list
+
+
+def build_command_list():
+    if platform.system() == 'Linux' or platform.system() == 'Darwin':
+        linux_commands = [
+            UNIX_CHMOD_STEP,
+            SDK_MANAGER_LICENSE_AGREEMENT,
+            SDK_MAN_INSTALL_PLATFORM_TOOLS,
+            SDK_MANAGER_INSTANT_APP_SETUP
+        ]
+        return linux_commands
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    light_forge()
