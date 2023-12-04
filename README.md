@@ -6,4 +6,6 @@ Could be used to setup a github action runner with the needed android build tool
   - Python3
   - pip install certifi OR pip3 install certifi
 # Running
-  - Python3 build_forge.py
+  - Download files
+  - Open Terminal and navigate to the folder contaning the files
+  - RUN: "Python3 build_forge.py"
