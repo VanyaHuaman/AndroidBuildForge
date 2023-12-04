@@ -4,4 +4,10 @@ Could be used to setup a github action runner with the needed android build tool
 # Dependencies
   - ANDROID_HOME env is set
   - Python3
+  - Java
+  - JAVA_HOME env is set
   - pip install certifi OR pip3 install certifi
+# Running
+  - Download files
+  - Open Terminal and navigate to the folder contaning the files
+  - RUN: "Python3 build_forge.py"
