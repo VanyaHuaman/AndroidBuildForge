@@ -61,6 +61,10 @@ def build_command_list():
     if is_unix():
         unix_commands = get_unix_setup_commands()
         return unix_commands
+    elif is_windows():
+        accept_win_license()
+        win_commands = get_win_setup_commands()
+        return win_commands
 
 
 def get_unix_setup_commands():
@@ -106,6 +110,60 @@ def get_unix_setup_commands():
     return command_list
 
 
+def accept_win_license():
+    license_path = f"{get_android_home()}{const.LICENSES_FOlDER}"
+
+    if not os.path.exists(license_path):
+        os.makedirs(license_path)
+    if not os.path.isfile(os.path.join(license_path, const.ANDROID_SDK_LICENSE)):
+        licenses_file = open(os.path.join(license_path, const.ANDROID_SDK_LICENSE), "w")
+        licenses_file.write(f"\n{const.ANDROID_SDK_LICENSE_KEY}")
+        licenses_file.close()
+
+    if not os.path.isfile(os.path.join(license_path, const.ANDROID_SDK_PREVIEW_LICENSE)):
+        licenses_file = open(os.path.join(license_path, const.ANDROID_SDK_PREVIEW_LICENSE), "w")
+        licenses_file.write(f"\n{const.ANDROID_SDK_PREVIEW_LICENSE_KEY}")
+        licenses_file.close()
+
+
+def get_win_setup_commands():
+    command_list = []
+    sdk_manager_path = get_sdk_manager_path()
+    sdk_manager_base_command = sdk_manager_path + const.SPACE + const.SDK_MAN_ARG_SDK_ROOT + get_android_home()
+
+    if not is_build_tool_version_installed(const.INITIAL_BUILD_TOOL_VERSION):
+        sdk_manager_build_tools = (const.WIN_ECHO_Y +
+                                   const.SPACE +
+                                   sdk_manager_base_command +
+                                   const.SPACE +
+                                   const.BUILD_TOOLS +
+                                   const.INITIAL_BUILD_TOOL_VERSION)
+        command_list.append(sdk_manager_build_tools)
+
+    if not is_platform_tools_installed():
+        sdk_man_install_platform_tools = (sdk_manager_base_command +
+                                          const.SPACE +
+                                          const.SDK_MAN_ARG_INSTALL +
+                                          const.SPACE +
+                                          const.PLATFORM_TOOLS)
+        command_list.append(sdk_man_install_platform_tools)
+
+    if not is_instant_app_tools_installed():
+        sdk_manager_instant_app_setup = (sdk_manager_base_command +
+                                         const.SPACE +
+                                         const.SDK_MAN_ARG_WIN_INSTANT_APP)
+        command_list.append(sdk_manager_instant_app_setup)
+
+    sdk_manager_license_agreement = (const.WIN_ECHO_Y +
+                                     const.SPACE +
+                                     sdk_manager_base_command +
+                                     const.SPACE +
+                                     const.SDK_MAN_ARG_LICENSES)
+    command_list.append(sdk_manager_license_agreement)
+
+    return command_list
+
+
 def get_commandline_url(cmdline_tools_version):
     commandline_url = ""
 
@@ -118,13 +176,17 @@ def get_commandline_url(cmdline_tools_version):
                            f"{cmdline_tools_version}" + const.LATEST_ZIP)
 
     elif is_windows():
-        commandline_url = (const.CMD_LINE_URL_BASE + const.WINDOWS + const.DASH +
+        commandline_url = (const.CMD_LINE_URL_BASE + const.WIN + const.DASH +
                            f"{cmdline_tools_version}" + const.LATEST_ZIP)
     return commandline_url
 
 
 def is_android_home_set():
     return get_android_home() is not None
+
+
+def is_java_home_set():
+    return get_java_home() is not None
 
 
 def is_build_tool_version_installed(version_code: str):
@@ -164,25 +226,38 @@ def get_android_home():
     return os.getenv(const.ANDROID_HOME)
 
 
+def get_java_home():
+    return os.getenv(const.JAVA_HOME)
+
+
 def get_sdk_manager_path():
     if is_unix():
         return (f"{get_android_home()}"
                 f"{const.UNIX_SDK_MAN_PATH_END}")
+    elif is_windows():
+        return (f"{get_android_home()}"
+                f"{const.WIN_SDK_MAN_PATH_END}")
 
 
 def get_build_tool_path(version_code: str):
     if is_unix():
         return f"{get_android_home()}{const.UNIX_BUILD_TOOLS_PATH_BASE}{version_code}"
+    elif is_windows():
+        return f"{get_android_home()}{const.WIN_BUILD_TOOLS_PATH_BASE}{version_code}"
 
 
 def get_platform_tools_path():
     if is_unix():
         return f"{get_android_home()}{const.FORWARD_SLASH}{const.PLATFORM_TOOLS}"
+    elif is_windows():
+        return f"{get_android_home()}{const.BACK_SLASH}{const.PLATFORM_TOOLS}"
 
 
 def get_instant_app_tools_path():
     if is_unix():
         return f"{get_android_home()}{const.FORWARD_SLASH}{const.EXTRAS_INSTANT_APP}"
+    elif is_windows():
+        return f"{get_android_home()}{const.BACK_SLASH}{const.EXTRAS_INSTANT_APP}"
 
 
 def is_sdkmanager_executable():
