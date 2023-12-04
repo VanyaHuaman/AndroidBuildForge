@@ -5,3 +5,5 @@ Could be used to setup a github action runner with the needed android build tool
   - ANDROID_HOME env is set
   - Python3
   - pip install certifi OR pip3 install certifi
+# Running
+  - Python3 build_forge.py
