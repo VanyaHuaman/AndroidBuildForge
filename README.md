@@ -6,8 +6,8 @@ Could be used to setup a github action runner with the needed android build tool
   - Python3
   - Java
   - JAVA_HOME env is set
-  - pip install certifi OR pip3 install certifi
 # Running
   - Download files
-  - Open Terminal and navigate to the folder contaning the files
-  - RUN: "Python3 build_forge.py"
+  - Open Terminal and navigate to the folder containing the files
+  - RUN: pip install -r requirements.txt
+  - RUN: Python3 build_forge.py
