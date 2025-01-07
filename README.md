@@ -1,4 +1,4 @@
-# AndroidBuildForge
+# Android Build Forge
 This program downloads and builds the files and folders needed to compile an Android build.
 Could be used to setup a github action runner with the needed android build tools.
 # Dependencies
